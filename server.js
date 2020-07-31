@@ -5,7 +5,7 @@ const passport=require('passport')
 const express=require('express')
 const app=express()
 const mongoose=require('mongoose')
-const keys=require('./config/devKeys')
+const keys=require('./config/keys')
 const cookieSession=require('cookie-session')
 app.use(
     cookieSession({
