@@ -1,0 +1,30 @@
+const keys=require('../config/devKeys')
+const passport=require('passport')
+const mongoose=require('mongoose')
+const User=mongoose.model('users')
+const GoogleStrategy=require('passport-google-oauth20').Strategy
+
+passport.serializeUser((user,done)=>{
+    console.log(user)
+    done(null,user.id)
+})
+passport.deserializeUser((id,done)=>{
+    User.findById(id).then(user => {
+        done(null, user)
+    })
+})
+
+passport.use(new GoogleStrategy({
+    clientID:keys.googleClientID,
+    clientSecret:keys.googleClientSecret,
+    callbackURL:'/auth/google/callback'
+    
+},async(accessToken,refreshToken,profile,done)=>{
+    const existingUser = await User.findOne({ googleID: profile.id })
+    if (existingUser) {
+      return  done(null, existingUser)
+    }
+    const user = await new User({ googleID: profile.id }).save()
+    done(null, user)
+}))
+
